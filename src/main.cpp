@@ -35,17 +35,25 @@ IPAddress secondaryDNS(1, 1, 1, 1); // optional
 JsonDocument readings;
 
 // button input
-const int buttonPin = 2;  // the number of the pushbutton pin
+
 // variables will change:
 int buttonState = 0;  // variable for reading the pushbutton status
 int sendButton = 0; //value to send to mobilephone. zero no button pressed
 
+// button input
+const int buttonPin = 17;  // the number of the pushbutton pin
+// variables will change:
+
+int time1 = millis();
+unsigned long x = 5000;
+bool test = false;
+
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
-String website1 = "<!DOCTYPE html><html><head><title>Julemand</title></head><body style='background-color: #EEEEEE;'><span style='color: #003366;'>  <p id='test1'>  ";
+String website1 = "<!DOCTYPE html><html><head><title>Julemand</title></head><body style='background-color: #EEEEEE;'><span style='color: #003366;'>  <p id='test1'> <audio id='a1' preload='auto'><source src='https://www.helseviden.dk/juleb/s1.mp3' type='audio/mpeg'></audio> ";
 String website2 = "</p></span> <video id='video', width='320' height='240'> </video><script>";
-String javasc1 = "const myp=document.getElementById('test1');myp.innerHTML='Button';let timer=setInterval(update,500);function update(){fetch('/button').then((e=>e.json())).then((e=>{'1'==e.button&&(myp.innerHtml=e.button,playspeak(),SendImageServer(TakePhoto()))}))}function playspeak(){}function TakePhoto(){let e=document.createElement('canvas'),t=document.getElementById('video');e.width=1920,e.height=1080,e.getContext('2d').drawImage(t,0,0,e.width,e.height);let n=e.toDataURL('image/jpeg');return console.log(n),n}function SendImageServer(e){fetch('https://www.helseviden.dk/juleb/upload1.php',{method:'POST',headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':'*'},'mode':'no-cors',body:JSON.stringify({image:e})}).then((e=>e.json())).then((e=>{console.log('Success:',e)})).catch((e=>{console.error('Error:',e)}))}const constraints={audio:!1,video:{width:1280,height:720}};navigator.mediaDevices.getUserMedia(constraints).then((e=>{const t=document.querySelector('video');t.srcObject=e,t.onloadedmetadata=()=>{t.play()}})).catch((e=>{console.error(`${e.name}: ${e.message}`)}));";
+String javasc1 = "const Audio=document.getElementById('a1');const myp=document.getElementById('test1');myp.innerHTML='Button';let timer=setInterval(update,500);function update(){fetch('/button').then((e=>e.json())).then((e=>{'1'==e.button&&(myp.innerHtml=e.button,playspeak(),SendImageServer(TakePhoto()))}))}function playspeak(){Audio.play();}function TakePhoto(){let e=document.createElement('canvas'),t=document.getElementById('video');e.width=1920,e.height=1080,e.getContext('2d').drawImage(t,0,0,e.width,e.height);let n=e.toDataURL('image/jpeg');return console.log(n),n}function SendImageServer(e){fetch('https://www.helseviden.dk/juleb/upload1.php',{method:'POST',headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':'*'},'mode':'no-cors',body:JSON.stringify({image:e})}).then((e=>e.json())).then((e=>{console.log('Success:',e)})).catch((e=>{console.error('Error:',e)}))}const constraints={audio:!1,video:{width:1280,height:720}};navigator.mediaDevices.getUserMedia(constraints).then((e=>{const t=document.querySelector('video');t.srcObject=e,t.onloadedmetadata=()=>{t.play()}})).catch((e=>{console.error(`${e.name}: ${e.message}`)}));";
 String website3 = "</script></body></html>";
 String website = "";
 
@@ -95,14 +103,16 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  // read the state of the pushbutton value:
-  /*
   buttonState = digitalRead(buttonPin);
-
-  // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
-  if (buttonState == HIGH) {
-    sendButton = 1;
-  } 
-  */
+  if ((millis()-time1) > x){
+    test=true;
+  }
+  if ((buttonState==1) && test==true){
+    test=false;
+    buttonState=0;
+    time1=millis();
+    sendButton=1;
+    Serial.println("Button Pressed"); 
 }
+}
+  
