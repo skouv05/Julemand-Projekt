@@ -17,7 +17,10 @@ function update() {
 				
 				SendImageServer(TakePhoto());
 			}
-		})
+		});
+
+		
+
 }
 function playspeak() {
 	//wav play - hvordan får vi audio fil med ud?
